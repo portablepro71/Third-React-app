@@ -2,19 +2,24 @@ import React from "react";
 import Card from "../UI/Card";
 import classes from "./AddUser.module.css";
 import Button from "../UI/Button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ErrorModal from "../UI/ErrorModal";
+import Wrapper from "../Helpers/Wrapper";
 
 const AddUser = (props) => {
-  const [enteredUsername, setEnteredUsername] = useState("");
-  const [enteredAge, setEnteredAge] = useState("");
+  // const [enteredUsername, setEnteredUsername] = useState("");
+  // const [enteredAge, setEnteredAge] = useState("");
   const [error, setError] = useState();
+  const enteredUsername = useRef();
+  const enteredAge = useRef();
 
   const addUserHandler = (event) => {
     event.preventDefault();
 
+    const name = enteredUsername.current.value;
+    const age = enteredAge.current.value;
     //input dolu mu boş mu ?
-    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+    if (name.trim().length === 0 || age.trim().length === 0) {
       setError({
         title: "Invalid input",
         message: "Please Enter valid name and age.",
@@ -22,7 +27,7 @@ const AddUser = (props) => {
       return;
     }
     //+ koymak string i integer a çevirir kısa yol!!!
-    if (+enteredAge < 1) {
+    if (+age < 1) {
       setError({
         title: "Invalid age",
         message: "Please Enter valid age (>0).",
@@ -30,48 +35,58 @@ const AddUser = (props) => {
       return;
     }
 
-    props.onAddUser(enteredUsername, enteredAge);
+    props.onAddUser(name, age);
 
-    setEnteredAge("");
-    setEnteredUsername("");
+    enteredUsername.current.value = "";
+    enteredAge.current.value = "";
+
+    // setEnteredAge("");
+    // setEnteredUsername("");
   };
 
-  const usernameChangeHandler = (event) => {
-    setEnteredUsername(event.target.value);
-  };
+  // const usernameChangeHandler = (event) => {
+  //   setEnteredUsername(event.target.value);
+  // };
 
-  const ageChangeHandler = (event) => {
-    setEnteredAge(event.target.value);
-  };
+  // const ageChangeHandler = (event) => {
+  //   setEnteredAge(event.target.value);
+  // };
 
   const errorHandler = () => {
     setError(null);
   };
 
-
   return (
-    <div>
-      {error && <ErrorModal title={error.title} message={error.message} onErrorExit={errorHandler}/>}
+    <Wrapper>
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onErrorExit={errorHandler}
+        />
+      )}
       <Card className={classes.input}>
         <form onSubmit={addUserHandler}>
           <label htmlFor="username">User Name</label>
           <input
             id="username"
             type="text"
-            value={enteredUsername}
-            onChange={usernameChangeHandler}
+            // value={enteredUsername}
+            // onChange={usernameChangeHandler}
+            ref={enteredUsername}
           />
           <label htmlFor="username">Age (years)</label>
           <input
             id="age"
             type="number"
-            value={enteredAge}
-            onChange={ageChangeHandler}
+            // value={enteredAge}
+            // onChange={ageChangeHandler}
+            ref={enteredAge}
           />
           <Button type="submit">Add User</Button>
         </form>
       </Card>
-    </div>
+    </Wrapper>
   );
 };
 
